@@ -1,0 +1,7 @@
+.terraform
+*.pub
+*.pem
+*.key
+*.crt
+*.csr
+*.srl
