@@ -10,12 +10,11 @@ pip install --upgrade awscli
 ##############
 
 BUCKET=${s3_bucket_name}
-PREFIX=${s3_prefix}
 SSH_USER=ubuntu
 
 mkdir -p /tmp/pub_key_files/
 
-for key in `aws s3api list-objects --bucket $BUCKET --prefix $PREFIX/ | jq -r '.Contents[].Key'`
+for key in `aws s3api list-objects --bucket $BUCKET | jq -r '.Contents[].Key'`
 do
   echo $key
   aws s3 cp s3://$BUCKET/$key /tmp/pub_key_files/

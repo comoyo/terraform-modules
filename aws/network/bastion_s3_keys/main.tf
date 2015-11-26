@@ -2,7 +2,6 @@ variable "name" { default = "bastion" }
 variable "instance_type" {}
 variable "instance_profile_name" {}
 variable "s3_bucket_name" {}
-variable "s3_prefix" {}
 variable "region" {}
 variable "key_name" {}
 variable "vpc_id" {}
@@ -50,7 +49,6 @@ resource "template_file" "scripts_update_authorized_keys_from_s3" {
 
   vars {
     s3_bucket_name = "${var.s3_bucket_name}"
-    s3_prefix      = "${var.s3_prefix}"
   }
 }
 
