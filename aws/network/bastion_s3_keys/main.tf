@@ -61,7 +61,8 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
   user_data              = "${template_file.scripts_update_authorized_keys_from_s3.rendered}"
 
-  lifecycle { create_before_destroy = true }
+//  Comment this lifecycle to avoid cycle error during update
+//  lifecycle { create_before_destroy = true }
 
   tags { Name = "${var.name}" }
 }
