@@ -1,9 +1,8 @@
 variable "name" { default = "bastion" }
 variable "instance_type" {}
-variable "instance_profile_name" {}
+variable "instance_profile_name_id" {}
 variable "s3_bucket_name" {}
 variable "region" {}
-variable "key_name" {}
 variable "vpc_id" {}
 variable "vpc_cidr" {}
 variable "subnet_ids" {}
@@ -44,19 +43,20 @@ module "ami" {
   distribution  = "trusty"
 }
 
+# This file is also copied to nat module
 resource "template_file" "scripts_update_authorized_keys_from_s3" {
   filename = "${path.module}/scripts/update_authorized_keys_from_s3.sh"
 
   vars {
     s3_bucket_name = "${var.s3_bucket_name}"
+    ssh_user = "ubuntu"
   }
 }
 
 resource "aws_instance" "bastion" {
   ami                    = "${module.ami.ami_id}"
   instance_type          = "${var.instance_type}"
-  key_name               = "${var.key_name}"
-  iam_instance_profile   = "${aws_iam_instance_profile.bastion.id}"
+  iam_instance_profile   = "${var.instance_profile_name_id}"
   subnet_id              = "${element(split(",", var.subnet_ids), count.index)}"
   vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
   user_data              = "${template_file.scripts_update_authorized_keys_from_s3.rendered}"
