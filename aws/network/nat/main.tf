@@ -12,6 +12,9 @@ variable "key_name" {
 }
 variable "s3_bucket_name" {
 }
+variable "ssh_user" {
+  default = "ec2-user"
+}
 variable "region" {
 }
 variable "vpc_id" {
@@ -54,11 +57,11 @@ module "nat_ami" {
 
 # This file is copied from bastion_s3_keys module
 resource "template_file" "scripts_update_authorized_keys_from_s3" {
-  filename = "${path.module}/scripts/update_authorized_keys_from_s3.sh"
+  template = "${file("${path.module}/scripts/update_authorized_keys_from_s3.sh")}"
 
   vars {
     s3_bucket_name = "${var.s3_bucket_name}"
-    ssh_user = "ec2-user"
+    ssh_user = "${var.ssh_user}"
   }
 }
 

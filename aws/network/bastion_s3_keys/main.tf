@@ -1,18 +1,32 @@
-variable "name" { default = "bastion" }
-variable "instance_type" {}
-variable "instance_profile_name_id" {}
-variable "s3_bucket_name" {}
-variable "region" {}
-variable "vpc_id" {}
-variable "vpc_cidr" {}
-variable "subnet_ids" {}
+variable "name" {
+  default = "bastion"
+}
+variable "instance_type" {
+}
+variable "instance_profile_name_id" {
+}
+variable "s3_bucket_name" {
+}
+variable "ssh_user" {
+  default = "ubuntu"
+}
+variable "region" {
+}
+variable "vpc_id" {
+}
+variable "vpc_cidr" {
+}
+variable "subnet_ids" {
+}
 
 resource "aws_security_group" "bastion" {
   name        = "${var.name}"
   vpc_id      = "${var.vpc_id}"
   description = "Bastion security group"
 
-  tags { Name = "${var.name}" }
+  tags {
+    Name = "${var.name}"
+  }
 
   ingress {
     protocol    = -1
@@ -45,11 +59,11 @@ module "ami" {
 
 # This file is also copied to nat module
 resource "template_file" "scripts_update_authorized_keys_from_s3" {
-  filename = "${path.module}/scripts/update_authorized_keys_from_s3.sh"
+  template = "${file("${path.module}/scripts/update_authorized_keys_from_s3.sh")}"
 
   vars {
     s3_bucket_name = "${var.s3_bucket_name}"
-    ssh_user = "ubuntu"
+    ssh_user       = "${var.ssh_user}"
   }
 }
 
@@ -61,11 +75,24 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
   user_data              = "${template_file.scripts_update_authorized_keys_from_s3.rendered}"
 
-//  Comment this lifecycle to avoid cycle error during update
-//  lifecycle { create_before_destroy = true }
-
-  tags { Name = "${var.name}" }
+  tags {
+    Name = "${var.name}"
+  }
 }
 
-output "ip" { value = "${aws_instance.bastion.public_ip}" }
-output "user" { value = "ubuntu" }
+resource "aws_eip" "bastion" {
+  vpc = true
+  instance = "${aws_instance.bastion.id}"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+output "ip" {
+  value = "${aws_eip.bastion.public_ip}"
+}
+
+output "user" {
+  value = "${var.ssh_user}"
+}
