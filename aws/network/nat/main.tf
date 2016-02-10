@@ -5,15 +5,7 @@ variable "public_subnets" {
 }
 variable "instance_type" {
 }
-variable "instance_profile_name_id" {
-}
-variable "key_name" {
-  default = ""
-}
-variable "s3_bucket_name" {
-}
-variable "ssh_user" {
-  default = "ec2-user"
+variable "iam_instance_profile" {
 }
 variable "region" {
 }
@@ -23,7 +15,7 @@ variable "vpc_cidr" {
 }
 variable "subnet_ids" {
 }
-variable "key_path" {
+variable "user_data" {
 }
 
 resource "aws_security_group" "nat" {
@@ -55,29 +47,18 @@ module "nat_ami" {
   region = "${var.region}"
 }
 
-# This file is copied from bastion_s3_keys module
-resource "template_file" "scripts_update_authorized_keys_from_s3" {
-  template = "${file("${path.module}/scripts/update_authorized_keys_from_s3.sh")}"
-
-  vars {
-    s3_bucket_name = "${var.s3_bucket_name}"
-    ssh_user = "${var.ssh_user}"
-  }
-}
-
 resource "aws_instance" "nat" {
   ami                         = "${module.nat_ami.ami_id}"
   count                       = "${length(split(",", var.public_subnets))}" # Comment out count to only have 1 NAT
   instance_type               = "${var.instance_type}"
-  iam_instance_profile        = "${var.instance_profile_name_id}"
+  iam_instance_profile        = "${var.iam_instance_profile}"
   subnet_id                   = "${element(split(",", var.subnet_ids), count.index)}"
-  key_name                    = "${var.key_name}"
 
   associate_public_ip_address = true
   source_dest_check           = false
   vpc_security_group_ids      = ["${aws_security_group.nat.id}"]
 
-  user_data                   = "${template_file.scripts_update_authorized_keys_from_s3.rendered}"
+  user_data                   = "${var.user_data}"
 
   tags {
     Name = "${var.name}.${count.index+1}"
