@@ -17,6 +17,8 @@ variable "user_data" {
 }
 variable "ami" {
 }
+variable "key_name" {
+}
 
 resource "aws_security_group" "bastion" {
   name        = "${var.name}"
@@ -57,6 +59,7 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = [ "${aws_security_group.bastion.id}" ]
   user_data              = "${var.user_data}"
   count                  = 1
+  key_name               = "${var.key_name}"
 
   tags {
     Name = "${var.name}"
