@@ -17,6 +17,8 @@ variable "subnet_ids" {
 }
 variable "user_data" {
 }
+variable "ami" {
+}
 
 resource "aws_security_group" "nat" {
   name        = "${var.name}"
@@ -42,13 +44,15 @@ resource "aws_security_group" "nat" {
   }
 }
 
+/*
 module "nat_ami" {
   source = "github.com/atsaki/tf_aws_nat_ami"
   region = "${var.region}"
 }
+*/
 
 resource "aws_instance" "nat" {
-  ami                         = "${module.nat_ami.ami_id}"
+  ami                         = "${var.ami}"
   count                       = "${length(split(",", var.public_subnets))}" # Comment out count to only have 1 NAT
   instance_type               = "${var.instance_type}"
   iam_instance_profile        = "${var.iam_instance_profile}"
