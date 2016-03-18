@@ -52,7 +52,7 @@ resource "aws_security_group" "bastion" {
 resource "aws_security_group" "ssh_from_bastion" {
   name = "ssh_from_bastion"
   description = "Allow ssh from bastion hosts"
-  vpc_id = "${module.vpc.vpc_id}"
+  vpc_id = "${var.vpc_id}"
 
   tags {
     Name = "ssh_from_bastion"
