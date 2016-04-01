@@ -90,3 +90,7 @@ resource "aws_instance" "bastion" {
 output "instance_id" {
   value = "${aws_instance.bastion.id}"
 }
+
+output "sg_from_bastion" {
+  value = "${aws_security_group.ssh_from_bastion.id}"
+}
