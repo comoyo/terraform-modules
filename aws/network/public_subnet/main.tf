@@ -61,3 +61,5 @@ resource "aws_network_acl" "public" {
 */
 
 output "subnet_ids" { value = "${join(",", aws_subnet.public.*.id)}" }
+
+output "route_table_id" { value = "${aws_route_table.public.id}" }
