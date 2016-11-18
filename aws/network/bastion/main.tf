@@ -25,7 +25,6 @@ variable "extra_security_groups" {
 
   type    = "list"
   default = []
-}
 
 resource "aws_security_group" "bastion" {
   name        = "${var.name}"
