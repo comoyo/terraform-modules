@@ -17,6 +17,9 @@ variable "user_data" {
 }
 variable "ami" {
 }
+variable "owner" {
+  default = ""
+} 
 
 resource "aws_security_group" "bastion" {
   name        = "${var.name}"
@@ -25,6 +28,7 @@ resource "aws_security_group" "bastion" {
 
   tags {
     Name = "${var.name}"
+    Owner = "${var.owner}"
   }
 
   ingress {
@@ -56,6 +60,7 @@ resource "aws_security_group" "ssh_from_bastion" {
 
   tags {
     Name = "ssh_from_bastion"
+    Owner = "${var.owner}"
   }
 
   ingress {
@@ -84,6 +89,7 @@ resource "aws_instance" "bastion" {
 
   tags {
     Name = "${var.name}"
+    Owner = "${var.owner}"
   }
 }
 
