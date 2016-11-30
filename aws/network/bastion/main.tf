@@ -19,7 +19,7 @@ variable "ami" {
 }
 variable "owner" {
   default = ""
-} 
+}
 variable "extra_security_groups" {
   description = "Additional list of security groups the Bastion instance shall have, that are not created by the module"
 
@@ -60,12 +60,12 @@ resource "aws_security_group" "bastion" {
 }
 
 resource "aws_security_group" "ssh_from_bastion" {
-  name = "ssh_from_bastion"
+  name = "ssh_from_${var.name}"
   description = "Allow ssh from bastion hosts"
   vpc_id = "${var.vpc_id}"
 
   tags {
-    Name = "ssh_from_bastion"
+    Name = "ssh_from_${var.name}"
     Owner = "${var.owner}"
   }
 
