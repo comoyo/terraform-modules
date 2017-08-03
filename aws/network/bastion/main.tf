@@ -120,3 +120,7 @@ output "instance_private_ip" {
 output "sg_from_bastion" {
   value = "${aws_security_group.ssh_from_bastion.id}"
 }
+
+output "sg_bastion" {
+  value = "${aws_security_group.bastion.id}"
+}
