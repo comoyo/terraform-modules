@@ -22,11 +22,27 @@ variable "owner" {
   default = ""
 }
 
+variable "open_sesame" {
+  default     = false
+  description = "Boolean variable to avoid attaching the default rule which opens port 22 for all IPs. It is set to true, should the port be open to everyone and false, if the open_sesame is used in eu-central-1 region."
+}
+
 variable "extra_security_groups" {
   description = "Additional list of security groups the Bastion instance shall have, that are not created by the module"
 
   type    = "list"
   default = []
+}
+
+resource "aws_security_group_rule" "open_to_world" {
+  type              = "ingress"
+  from_port         = "22"
+  to_port           = "22"
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.bastion.id}"
+
+  count = "${1 - var.open_sesame}"
 }
 
 resource "aws_security_group" "bastion" {
@@ -44,13 +60,6 @@ resource "aws_security_group" "bastion" {
     from_port   = 0
     to_port     = 0
     cidr_blocks = ["${var.vpc_cidr}"]
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
