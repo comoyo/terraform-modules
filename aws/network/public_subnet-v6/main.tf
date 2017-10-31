@@ -32,7 +32,6 @@ resource "aws_route" "public_inet" {
 
 resource "aws_route_table_association" "public" {
   count          = "${length(concat(split(",", var.cidrs), split(",", var.ipv6_cidrs)))}"
-  // count          = "${length(split(",", var.cidrs))}"
   subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
   route_table_id = "${aws_route_table.public.id}"
 }
