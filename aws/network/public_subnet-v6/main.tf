@@ -30,6 +30,12 @@ resource "aws_route" "public_inet" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
+resource "aws_route" "public_inet-v6" {
+  route_table_id              = "${aws_route_table.public.id}"
+  gateway_id                  = "${var.igw_id}"
+  destination_ipv6_cidr_block = "::/0"
+}
+
 resource "aws_route_table_association" "public" {
   count          = "${length(concat(split(",", var.cidrs), split(",", var.ipv6_cidrs)))}"
   subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
