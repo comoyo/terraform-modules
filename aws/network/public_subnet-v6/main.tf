@@ -37,7 +37,7 @@ resource "aws_route" "public_inet-v6" {
 }
 
 resource "aws_route_table_association" "public" {
-  count          = "${length(concat(split(",", var.cidrs), split(",", var.ipv6_cidrs)))}"
+  count          = "${length(split(",", var.cidrs))}"
   subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
   route_table_id = "${aws_route_table.public.id}"
 }
@@ -72,7 +72,6 @@ resource "aws_network_acl" "public" {
 
 output "subnet_ids" { value = "${join(",", aws_subnet.public.*.id)}" }
 output "subnet_ipv6_cidr" { value = "${join(",", aws_subnet.public.*.ipv6_cidr_block)}" }
-output "subnet_ipv6_association_id" { value = "${aws_subnet.public.ipv6_association_id}" }
 
 output "route_table_id" { value = "${aws_route_table.public.id}" }
 
